@@ -1,9 +1,11 @@
 package com.github.ardlema.alerts
 
 import java.io.{BufferedWriter, FileWriter}
-import com.opencsv.{CSVWriter}
+
+import com.opencsv.CSVWriter
 
 import scala.util.{Failure, Try}
+import scala.collection.JavaConverters._
 
 object EventsGenerator {
   
@@ -35,7 +37,7 @@ object EventsGenerator {
                     header: List[String],
                     rows: List[List[String]]
                   ): Try[Unit] =
-    Try(new CSVWriter(new BufferedWriter(new FileWriter(fileName)))).flatMap((csvWriter: CSVWriter) =>
+    Try(new CSVWriter(new BufferedWriter(new FileWriter(fileName)),',','\0', '\0',"\n")).flatMap((csvWriter: CSVWriter) =>
       Try{
         csvWriter.writeAll(
           (header +: rows).map(_.toArray).asJava
@@ -55,8 +57,7 @@ object EventsGenerator {
     )
   
   def main(args : Array[String]) {
-    println( "Hello World!" )
-    println("concat arguments = " + foo(args))
+    println(writeCsvFile("./test.csv", header, addPrefix(rows)))
   }
 
 }
