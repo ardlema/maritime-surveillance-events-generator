@@ -1,10 +1,13 @@
 package com.github.ardlema.alerts
 
 import java.io.File
+import java.time.{Instant, ZoneId, ZoneOffset}
+import java.time.format.{DateTimeFormatter, FormatStyle}
+import java.util.Locale
 
 import com.github.tototoshi.csv.CSVWriter
 
-import scala.util.{Random}
+import scala.util.Random
 
 object EventsGenerator {
 
@@ -55,12 +58,17 @@ object EventsGenerator {
       val fileName = s"""${outputDirectoryWithGeneratedFiles}$generateRandomFileName.csv"""
       val randomCameraIdAndLocation = camerasIdsAndLocations(random.nextInt(camerasIdsAndLocations.size))
       val randomImageFile = files(random.nextInt(files.size))
+
+
+      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        .withZone(ZoneId.systemDefault())
+      val nowDateAsString = formatter.format(Instant.now())
       if (isImage(randomImageFile)) {
         val row = List(randomCameraIdAndLocation.cameraId,
           randomCameraIdAndLocation.locationName,
           randomCameraIdAndLocation.latitude,
           randomCameraIdAndLocation.longitude,
-          "2015-01-01T12:10:30Z",
+          nowDateAsString,
           randomImageFile.getAbsolutePath)
         writeCsvFile(fileName, header, row)
       }
