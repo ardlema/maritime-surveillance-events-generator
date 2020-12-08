@@ -2,4 +2,7 @@
 *.iml
 .idea/
 
+#Sample generated files
 *.csv
+
+target/

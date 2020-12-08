@@ -1,11 +1,10 @@
 package com.github.ardlema.alerts
 
-import java.io.{BufferedWriter, File, FileWriter}
+import java.io.File
 
 import com.github.tototoshi.csv.CSVWriter
 
-import scala.util.{Failure, Random, Try}
-import scala.collection.JavaConverters._
+import scala.util.{Random}
 
 object EventsGenerator {
 
@@ -51,19 +50,27 @@ object EventsGenerator {
 
   def generateCSVFiles(files: List[File]) = {
     val random = new Random
-    //while (true) {
+    while (true) {
       val generateRandomFileName = Random.alphanumeric.take(numberOfCharsOfGeneratedFilesName).mkString("")
       val fileName = s"""${outputDirectoryWithGeneratedFiles}$generateRandomFileName.csv"""
-    println("FILE NAME -> "+fileName)
       val randomCameraIdAndLocation = camerasIdsAndLocations(random.nextInt(camerasIdsAndLocations.size))
       val randomImageFile = files(random.nextInt(files.size))
-      val row = List(randomCameraIdAndLocation.cameraId,
-        randomCameraIdAndLocation.locationName,
-        randomCameraIdAndLocation.latitude,
-        randomCameraIdAndLocation.longitude,
-        "2015-01-01T12:10:30Z",
-        randomImageFile.getAbsolutePath)
-      writeCsvFile(fileName, header, row)
-    //}
+      if (isImage(randomImageFile)) {
+        val row = List(randomCameraIdAndLocation.cameraId,
+          randomCameraIdAndLocation.locationName,
+          randomCameraIdAndLocation.latitude,
+          randomCameraIdAndLocation.longitude,
+          "2015-01-01T12:10:30Z",
+          randomImageFile.getAbsolutePath)
+        writeCsvFile(fileName, header, row)
+      }
+      Thread.sleep(500)
+    }
+  }
+
+  def isImage(file: File) = {
+    val validExtensions = List("jpg", "jpeg", "gif")
+    val extension = file.toString.split("\\.").last
+    validExtensions.contains(extension)
   }
 }
